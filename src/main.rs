@@ -1,25 +1,10 @@
-/*
-There's a way to write a regex! macro which compiles regular expressions when the program compiles. 
-In other words, using regex! means our program cannot compile with an invalid regular expression. 
-Moreover, the regex! macro compiles the given expression to native Rust code, which makes it much faster for searching text.
-
-To use the regex! macro, we must enable the plugin feature.
-
-Reference: https://docs.rs/regex/0.1.26/regex/
-
-
-#![feature(plugin)]
-#![plugin(regex_macros)]
-extern crate regex;
-*/
-
 use clap::Parser;
 use crate::arguments::Args;
 use flate2::read::GzDecoder;
 use regex::Regex;
 use std::fs::File;
 use std::io;
-use std::io::{BufRead, BufReader, Lines};
+use std::io::{BufRead, BufReader};
 
 
 mod arguments;
@@ -28,7 +13,7 @@ fn main() -> io::Result<()> {
    let arguments = Args::parse();
 
    let files = arguments.files;
-   let pattern = arguments.pattern;
+   let pattern = "CC|SSN"; // make sure to return a &str here
 
    println!("Looking for pattern {} in {}", pattern, files);
 
@@ -39,14 +24,28 @@ fn main() -> io::Result<()> {
    let mut lines_processed = 0;
    let mut lines_redacted = 0;
 
-   let re = Regex::new(r"SSN|CC");
-   for line in reader.lines() {
-       println!("{}", line?);
+   let re = match Regex::new(pattern) {
+        Ok(re) => re,
+        Err(err) => panic!("{}", err),
+    };
+   
+   for read_line_result in reader.lines() {
+       //println!("{}", line?);
        lines_processed = lines_processed + 1;
 
-       
-       
+       match read_line_result {
+            Ok(read_line) => {
+                if re.is_match(&read_line) {
+                    println!("{}", read_line);
+                    lines_redacted = lines_redacted + 1;
+                }
+            },
+            Err(e) => return Err(e),
+       };
+
    }
+
+   println!("Lines processed: {} Lines redacted: {}", lines_processed, lines_redacted);
 
    Ok(())
 }
