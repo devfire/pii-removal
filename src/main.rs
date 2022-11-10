@@ -1,22 +1,14 @@
 use clap::Parser;
 
-/// Simple program to greet a person
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
-struct Args {
-   /// Name of the person to greet
-   #[arg(short, long)]
-   name: String,
+use crate::arguments::Args;
 
-   /// Number of times to greet
-   #[arg(short, long, default_value_t = 1)]
-   count: u8,
-}
+mod arguments;
 
 fn main() {
-   let args = Args::parse();
+   let arguments = Args::parse();
 
-   for _ in 0..args.count {
-       println!("Hello {}!", args.name)
-   }
+   let files = arguments.files;
+   let pattern = arguments.pattern;
+
+   println!("Looking for pattern {} in {}", pattern, files);
 }
