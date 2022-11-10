@@ -1,20 +1,11 @@
 use clap::Parser;
 use crate::arguments::Args;
 use flate2::read::GzDecoder;
-//use std::fmt;
+use regex::Regex;
 use std::fs::File;
 use std::io;
-use std::io::{BufRead, BufReader, Lines};
+use std::io::{BufRead, BufReader};
 
-/// Iterator of lines direct from file path.
-pub fn read_lines(path: &str) -> io::Result<Lines<BufReader<File>>> {
-    Ok(BufReader::new(File::open(path)?).lines())
-}
-
-/// Iterator of lines, gunzipped, direct from file path.
-pub fn read_gz_lines(path: &str) -> io::Result<Lines<BufReader<GzDecoder<File>>>> {
-    Ok(BufReader::new(GzDecoder::new(File::open(path)?)).lines())
-}
 
 mod arguments;
 
@@ -22,7 +13,7 @@ fn main() -> io::Result<()> {
    let arguments = Args::parse();
 
    let files = arguments.files;
-   let pattern = arguments.pattern;
+   let pattern = "CC|SSN"; // make sure to return a &str here
 
    println!("Looking for pattern {} in {}", pattern, files);
 
@@ -30,9 +21,31 @@ fn main() -> io::Result<()> {
    
    let reader = BufReader::new(GzDecoder::new(file));
 
-   for line in reader.lines() {
-       println!("{}", line?);
+   let mut lines_processed = 0;
+   let mut lines_redacted = 0;
+
+   let re = match Regex::new(pattern) {
+        Ok(re) => re,
+        Err(err) => panic!("{}", err),
+    };
+   
+   for read_line_result in reader.lines() {
+       //println!("{}", line?);
+       lines_processed = lines_processed + 1;
+
+       match read_line_result {
+            Ok(read_line) => {
+                if re.is_match(&read_line) {
+                    println!("{}", read_line);
+                    lines_redacted = lines_redacted + 1;
+                }
+            },
+            Err(e) => return Err(e),
+       };
+
    }
+
+   println!("Lines processed: {} Lines redacted: {}", lines_processed, lines_redacted);
 
    Ok(())
 }
