@@ -6,7 +6,7 @@ pub struct Args {
     #[clap(short = 'f', long)]
     pub files: String,
 
-    /// Comma separated PII pattern to eliminate, i.e. "CC,SSN"
+    /// Pipe separated regex PII pattern to eliminate, i.e. "CC|SSN"
     #[clap(short = 'p', long)]
     pub pattern: String,
 }
