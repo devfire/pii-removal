@@ -1,5 +1,4 @@
 use clap::Parser;
-
 use crate::arguments::Args;
 
 mod arguments;
