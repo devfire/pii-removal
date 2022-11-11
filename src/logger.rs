@@ -1,3 +1,4 @@
+// Borrowed heavily from https://github.com/estk/log4rs/blob/master/examples/log_to_file.rs
 use log::{LevelFilter, SetLoggerError};
 use log4rs::append::console::ConsoleAppender;
 use log4rs::append::rolling_file::{RollingFileAppender, LogFile, policy::Policy};
