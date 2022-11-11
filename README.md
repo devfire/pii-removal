@@ -8,8 +8,8 @@ To run, `git clone` this repo and then execute `cargo build --release` to build 
 - [x] create an audit log that includes the name of each file processed, a count of the total number of lines processed in each log file, and a count of the total number of lines removed from each log file
 
 # Sample usage
-```bash
-target/release/pii-removal test-data/*.gz --logfile log.out
+```console
+igor@laptop:~/pii-removal$ target/release/pii-removal test-data/*.gz --logfile log.out
 
 2022-11-11T12:56:14.255265458-05:00 INFO pii_removal - Processing file: "test-data/bad.data.log.gz" 
 2022-11-11T12:56:14.255331467-05:00 ERROR pii_removal - Encountered invalid gzip file, error: invalid gzip header
