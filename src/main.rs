@@ -1,5 +1,4 @@
 use clap::Parser;
-//use std::path::PathBuf;
 
 use flate2::read::GzDecoder;
 use regex::Regex;
