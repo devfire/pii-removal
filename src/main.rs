@@ -54,7 +54,9 @@ fn main() -> io::Result<()> {
         // https://doc.rust-lang.org/std/macro.format.html
         // NOTE: this will create a "redacted" output file even if the input is not a valid gzip
         // TODO: run a quick gzip header validation to ensure a valid gzip input
-        let redacted_file_name = format!("{}{}",file, REDACTED_SUFFIX);
+        let mut redacted_file_name = format!("{}{}",file, REDACTED_SUFFIX);
+
+        redacted_file_name = redacted_file_name.replacen(".gz", "", 1);
 
         // Open the gz input file read-only
         let input_file = File::open(file)?;
