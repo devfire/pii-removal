@@ -5,6 +5,9 @@ use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader};
 
+// NOTE the arg_required_else_help parameter. It forces a default help when no CLI inputs are passed.
+// It is undocumented but does exist, see here
+// https://github.com/clap-rs/clap/blob/master/examples/git-derive.rs#L19
 #[derive(Parser)]
 #[command(author, version, about, arg_required_else_help = true, long_about = None)]
 struct Cli {
@@ -19,6 +22,7 @@ fn main() -> io::Result<()> {
     // TODO: Should be configurable from the CLI.
     let pattern = "CC|SSN"; // make sure to return a &str here
 
+    // cli.files is a Vector of strings, containing 1 or more files to process
     for file in cli.files {
         println!("Processing file: {:?}", file);
 
