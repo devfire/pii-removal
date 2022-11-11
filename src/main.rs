@@ -22,11 +22,21 @@ fn main() -> io::Result<()> {
     // TODO: Should be configurable from the CLI.
     let pattern = "CC|SSN"; // make sure to return a &str here
 
+    // this gets appended to the end of the redacted file
+    let redacted_suffix = ".redacted";
+
     // cli.files is a Vector of strings, containing 1 or more files to process
     for file in cli.files {
         println!("Processing file: {:?}", file);
 
+        // constuct a new filename for the target output file with PII removed
+        let redacted_file_name = format!("{}{}",file, redacted_suffix);
+
+        // Open the input file read-only
         let file = File::open(file)?;
+
+        // Create the file without PII write-only
+        let redacted_file = File::create(redacted_file_name);
 
         let reader = BufReader::new(GzDecoder::new(file));
      
@@ -39,14 +49,16 @@ fn main() -> io::Result<()> {
          };
         
         for read_line_result in reader.lines() {
-            //println!("{}", line?);
             lines_processed = lines_processed + 1;
      
             match read_line_result {
                  Ok(read_line) => {
                      if re.is_match(&read_line) {
-                         println!("{}", read_line);
+                        //  println!("{}", read_line);
                          lines_redacted = lines_redacted + 1;
+                     } else {
+                        println!("{}", read_line);
+
                      }
                  },
                  Err(e) => return Err(e),
