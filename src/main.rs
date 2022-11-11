@@ -18,6 +18,10 @@ struct Cli {
     files: Vec<String>,
 }
 
+// PII patterns to filter. 
+// TODO: Should be configurable from the CLI.
+const PATTERN: &str = "CC|SSN"; // make sure to return a &str here
+
 fn main() -> io::Result<()> {
     // Parse the arguments coming in from the CLI
     let cli = Cli::parse();
@@ -27,11 +31,7 @@ fn main() -> io::Result<()> {
         error!("Could not initialize logger: {}", e);
     }
 
-    // PII patterns to filter. 
-    // TODO: Should be configurable from the CLI.
-    let pattern = "CC|SSN"; // make sure to return a &str here
-
-    let re = match Regex::new(pattern) {
+    let re = match Regex::new(PATTERN) {
         Ok(re) => re,
         Err(err) => panic!("{}", err),
     };
