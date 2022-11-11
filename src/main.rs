@@ -4,7 +4,7 @@ use regex::Regex;
 use std::fs::File;
 use std::io;
 use std::io::{BufWriter, Write, BufRead, BufReader};
-use log::error;
+use log::{error, info};
 
 mod logger;
 
@@ -19,7 +19,13 @@ struct Cli {
 }
 
 fn main() -> io::Result<()> {
+    // Parse the arguments coming in from the CLI
     let cli = Cli::parse();
+
+    // Setup the logging framework
+    if let Err(e) = logger::init() {
+        error!("Could not initialize logger: {}", e);
+    }
 
     // PII patterns to filter. 
     // TODO: Should be configurable from the CLI.
@@ -35,10 +41,12 @@ fn main() -> io::Result<()> {
 
     // cli.files is a Vector of strings, containing 1 or more files to process
     for file in cli.files {
-        print!("Processing file: {:?} ", file);
+        info!("Processing file: {:?} ", file);
 
         // constuct a new filename for the target output file with PII removed
         // https://doc.rust-lang.org/std/macro.format.html
+        // NOTE: this will create a "redacted" output file even if the input is not a valid gzip
+        // TODO: run a quick gzip header validation to ensure a valid gzip input
         let redacted_file_name = format!("{}{}",file, redacted_suffix);
 
         // Open the gz input file read-only
@@ -69,17 +77,15 @@ fn main() -> io::Result<()> {
             match read_line_result {
                  Ok(read_line) => {
                      if re.is_match(&read_line) {
-                        //  println!("{}", read_line);
                          lines_redacted = lines_redacted + 1;
                      } else {
-                        // println!("{}", read_line);
                         writeln!(redacted_file, "{}", read_line)?;
                      }
                  },
-                 Err(e) => println!("Encountered invalid gzip file, error: {}", e)
+                 Err(e) => error!("Encountered invalid gzip file, error: {}", e)
             };
         }
-        println!("Lines processed: {} Lines redacted: {}", lines_processed, lines_redacted);
+        info!("Lines processed: {} Lines redacted: {}", lines_processed, lines_redacted);
     }
     Ok(())
 }

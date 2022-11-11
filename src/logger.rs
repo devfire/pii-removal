@@ -6,9 +6,9 @@ use log4rs::Handle;
 use anyhow::Result;
 
 const FILE_ROLL_BYTE_THRESHOLD: u64 = 2_500_000;
-const LOGFILE_PATH: &str = "audit.log";
+const LOGFILE_PATH: &str = "./audit.log";
 
-//#[allow(dead_code)]
+#[allow(dead_code)]
 pub struct Logger {
     handle: Handle
 }
@@ -39,8 +39,8 @@ pub fn init() -> Result<Logger, SetLoggerError> {
         .logger(log4rs::config::Logger::builder()
             .appender("rollfile")
             .additive(false)
-            .build("app::rollfile", LevelFilter::Debug))
-        .build(Root::builder().appender("console").build(LevelFilter::Info))
+            .build("app::rollfile", LevelFilter::Info))
+        .build(Root::builder().appender("rollfile").appender("console").build(LevelFilter::Info))
         .unwrap();
 
     let handle = log4rs::init_config(config).unwrap();

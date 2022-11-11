@@ -464,8 +464,10 @@ dependencies = [
 name = "pii-removal"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "clap",
  "flate2",
+ "log",
  "log4rs",
  "regex",
 ]
