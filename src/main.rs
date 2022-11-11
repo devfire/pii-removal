@@ -6,7 +6,7 @@ use std::io;
 use std::io::{BufRead, BufReader};
 
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
+#[command(author, version, about, arg_required_else_help = true, long_about = None)]
 struct Cli {
     ///List of files to process, wildcards are supported.
     files: Vec<String>,
