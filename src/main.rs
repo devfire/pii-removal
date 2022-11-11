@@ -33,7 +33,7 @@ fn main() -> io::Result<()> {
 
     // cli.files is a Vector of strings, containing 1 or more files to process
     for file in cli.files {
-        println!("Processing file: {:?}", file);
+        print!("Processing file: {:?} ", file);
 
         // constuct a new filename for the target output file with PII removed
         // https://doc.rust-lang.org/std/macro.format.html
@@ -67,11 +67,10 @@ fn main() -> io::Result<()> {
                         //  println!("{}", read_line);
                          lines_redacted = lines_redacted + 1;
                      } else {
-                        println!("{}", read_line);
-
+                        // println!("{}", read_line);
                      }
                  },
-                 Err(e) => return Err(e),
+                 Err(e) => println!("Encountered invalid gzip file, error: {}", e)
             };
         }
         println!("Lines processed: {} Lines redacted: {}", lines_processed, lines_redacted);
