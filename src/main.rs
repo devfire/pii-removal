@@ -1,41 +1,29 @@
 use clap::Parser;
-//use crate::arguments::Args;
 use flate2::read::GzDecoder;
 use regex::Regex;
 use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader};
 
-// NOTE: we need multiple values since shell glob expansion will create N number of files.
-// https://docs.rs/clap/latest/clap/builder/struct.Arg.html#method.get_value_delimiter
-#[derive(Debug, Parser)]
-#[clap(
-    version,
-    about = "Remove sensitive PII from log files."
-)]
-struct Args {
-    /// Files glob pattern to process
-    #[clap(short, long, use_value_delimiter = true)]
-    pub files: Option<Vec<String>>,
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    ///List of files to process, wildcards are supported.
+    files: Vec<String>,
 }
 
-
-//mod arguments;
-
 fn main() -> io::Result<()> {
-   let arguments = Args::parse();
+    let cli = Cli::parse();
 
-   let pattern = "CC|SSN"; // make sure to return a &str here
+    // PII patterns to filter. 
+    // TODO: Should be configurable from the CLI.
+    let pattern = "CC|SSN"; // make sure to return a &str here
 
-   // This took a long time to get right.
-   // What we get back from arguments.files is an Option of a Vector of files.
-   // So we are using a shorthand to grab the vector from the option,
-   // iterating over the values in the vector.
-   if let Some(files) = arguments.files {
-        for file in files {
-            println!("Processing {}", file);
-            let file = File::open(file)?;
-       
+    for file in cli.files {
+        println!("Processing file: {:?}", file);
+
+        let file = File::open(file)?;
+
         let reader = BufReader::new(GzDecoder::new(file));
      
         let mut lines_processed = 0;
@@ -59,13 +47,8 @@ fn main() -> io::Result<()> {
                  },
                  Err(e) => return Err(e),
             };
-     
         }
-
-
         println!("Lines processed: {} Lines redacted: {}", lines_processed, lines_redacted);
-        }
-   }
-
-   Ok(())
+    }
+    Ok(())
 }
