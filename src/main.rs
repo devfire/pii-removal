@@ -4,6 +4,9 @@ use regex::Regex;
 use std::fs::File;
 use std::io;
 use std::io::{BufWriter, Write, BufRead, BufReader};
+use log::error;
+
+mod logger;
 
 // NOTE the arg_required_else_help parameter. It forces a default help when no CLI inputs are passed.
 // It is undocumented but does exist, see here
