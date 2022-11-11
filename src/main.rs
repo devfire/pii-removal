@@ -56,6 +56,7 @@ fn main() -> io::Result<()> {
         // TODO: run a quick gzip header validation to ensure a valid gzip input
         let mut redacted_file_name = format!("{}{}",file, REDACTED_SUFFIX);
 
+        // remove the .gz extension from the redacted file since it's plaintext
         redacted_file_name = redacted_file_name.replacen(".gz", "", 1);
 
         // Open the gz input file read-only
@@ -86,8 +87,10 @@ fn main() -> io::Result<()> {
             match read_line_result {
                  Ok(read_line) => {
                      if re.is_match(&read_line) {
+                        // Because we hit on a match on PII PATTERN, we write nothing to the redacted file
                          lines_redacted = lines_redacted + 1;
                      } else {
+                        // No PII found, write to the redacted file
                         writeln!(redacted_file, "{}", read_line)?;
                      }
                  },
