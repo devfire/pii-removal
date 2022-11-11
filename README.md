@@ -1,5 +1,8 @@
 # Overview
-This solution removes PII from gzipped log files.
+This solution removes PII from gzipped log files. What constitutes "PII" is defined as a constant in [main.rs](src/main.rs):
+```rust
+const PATTERN: &str = "CC|SSN";
+```
 
 To run, `git clone` this repo and then execute `cargo build --release` to build an optimized binary.
 # Requirements
