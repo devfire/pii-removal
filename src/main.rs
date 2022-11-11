@@ -34,15 +34,15 @@ fn main() -> io::Result<()> {
     // Parse the arguments coming in from the CLI
     let cli = Cli::parse();
 
-    
     // Setup the logging framework
     if let Err(e) = logger::init(&cli.logfile) {
         error!("Could not initialize logger: {}", e);
     }
 
+    // Setup the regex using PATTERN defined above
     let re = match Regex::new(PATTERN) {
         Ok(re) => re,
-        Err(err) => panic!("{}", err),
+        Err(err) => panic!("{}", err), // this should not fail, panic if it does
     };
 
     // cli.files is a Vector of strings, containing 1 or more files to process
@@ -53,7 +53,10 @@ fn main() -> io::Result<()> {
         // https://doc.rust-lang.org/std/macro.format.html
         // NOTE: this will create a "redacted" output file even if the input is not a valid gzip
         // TODO: run a quick gzip header validation to ensure a valid gzip input
-        let redacted_file_name = format!("{}{}",file, REDACTED_SUFFIX);
+        let mut redacted_file_name = format!("{}{}",file, REDACTED_SUFFIX);
+
+        // remove the .gz extension from the redacted file since it's plaintext
+        redacted_file_name = redacted_file_name.replacen(".gz", "", 1);
 
         // Open the gz input file read-only
         let input_file = File::open(file)?;
@@ -83,8 +86,10 @@ fn main() -> io::Result<()> {
             match read_line_result {
                  Ok(read_line) => {
                      if re.is_match(&read_line) {
+                        // Because we hit on a match on PII PATTERN, we write nothing to the redacted file
                          lines_redacted = lines_redacted + 1;
                      } else {
+                        // No PII found, write to the redacted file
                         writeln!(redacted_file, "{}", read_line)?;
                      }
                  },
