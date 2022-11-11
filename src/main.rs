@@ -35,7 +35,6 @@ fn main() -> io::Result<()> {
     // Parse the arguments coming in from the CLI
     let cli = Cli::parse();
 
-    
     // Setup the logging framework
     if let Err(e) = logger::init(&cli.logfile) {
         error!("Could not initialize logger: {}", e);
@@ -43,7 +42,7 @@ fn main() -> io::Result<()> {
 
     let re = match Regex::new(PATTERN) {
         Ok(re) => re,
-        Err(err) => panic!("{}", err),
+        Err(err) => panic!("{}", err), // this should not fail, panic if it does
     };
 
     // cli.files is a Vector of strings, containing 1 or more files to process
