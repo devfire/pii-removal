@@ -3,7 +3,7 @@ use flate2::read::GzDecoder;
 use regex::Regex;
 use std::fs::File;
 use std::io;
-use std::io::{BufRead, BufReader};
+use std::io::{BufWriter, Write, BufRead, BufReader};
 
 // NOTE the arg_required_else_help parameter. It forces a default help when no CLI inputs are passed.
 // It is undocumented but does exist, see here
@@ -43,7 +43,7 @@ fn main() -> io::Result<()> {
         let input_file = File::open(file)?;
 
         // Create the file without PII write-only
-        let redacted_file = File::create(redacted_file_name)?;
+        let mut redacted_file = BufWriter::new(File::create(redacted_file_name)?);
 
         let reader = BufReader::new(GzDecoder::new(input_file));
      
@@ -68,6 +68,7 @@ fn main() -> io::Result<()> {
                          lines_redacted = lines_redacted + 1;
                      } else {
                         // println!("{}", read_line);
+                        writeln!(redacted_file, "{}", read_line)?;
                      }
                  },
                  Err(e) => println!("Encountered invalid gzip file, error: {}", e)
