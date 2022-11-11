@@ -22,6 +22,10 @@ struct Cli {
 // TODO: Should be configurable from the CLI.
 const PATTERN: &str = "CC|SSN"; // make sure to return a &str here
 
+
+// this gets appended to the end of the redacted file
+const REDACTED_SUFFIX: &str = ".redacted";
+
 fn main() -> io::Result<()> {
     // Parse the arguments coming in from the CLI
     let cli = Cli::parse();
@@ -36,9 +40,6 @@ fn main() -> io::Result<()> {
         Err(err) => panic!("{}", err),
     };
 
-    // this gets appended to the end of the redacted file
-    let redacted_suffix = ".redacted";
-
     // cli.files is a Vector of strings, containing 1 or more files to process
     for file in cli.files {
         info!("Processing file: {:?} ", file);
@@ -47,7 +48,7 @@ fn main() -> io::Result<()> {
         // https://doc.rust-lang.org/std/macro.format.html
         // NOTE: this will create a "redacted" output file even if the input is not a valid gzip
         // TODO: run a quick gzip header validation to ensure a valid gzip input
-        let redacted_file_name = format!("{}{}",file, redacted_suffix);
+        let redacted_file_name = format!("{}{}",file, REDACTED_SUFFIX);
 
         // Open the gz input file read-only
         let input_file = File::open(file)?;
