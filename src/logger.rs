@@ -5,8 +5,8 @@ use log4rs::config::{Appender, Config, Root};
 use log4rs::Handle;
 use anyhow::Result;
 
+// Sets the max log file size, if exceeds a new file will be created.
 const FILE_ROLL_BYTE_THRESHOLD: u64 = 2_500_000;
-const LOGFILE_PATH: &str = "./audit.log";
 
 #[allow(dead_code)]
 pub struct Logger {
@@ -25,12 +25,12 @@ impl Policy for SizeRotatePolicy {
     }
 }
 
-pub fn init() -> Result<Logger, SetLoggerError> {
+pub fn init(logfile_path: &str) -> Result<Logger, SetLoggerError> {
 
     let console = ConsoleAppender::builder().build();
     let pol = SizeRotatePolicy;
 
-    let rollfile = RollingFileAppender::builder().build(LOGFILE_PATH, Box::new(pol)).unwrap();
+    let rollfile = RollingFileAppender::builder().build(logfile_path, Box::new(pol)).unwrap();
 
     let config = Config::builder()
         .appender(Appender::builder().build("console", Box::new(console)))

@@ -1,4 +1,6 @@
 use clap::Parser;
+//use std::path::PathBuf;
+
 use flate2::read::GzDecoder;
 use regex::Regex;
 use std::fs::File;
@@ -16,12 +18,15 @@ mod logger;
 struct Cli {
     ///List of files to process, wildcards are supported.
     files: Vec<String>,
+
+    /// Sets a custom log file
+    #[arg(short, long,required = true, value_name = "LOG")]
+    logfile: String,
 }
 
 // PII patterns to filter. 
 // TODO: Should be configurable from the CLI.
 const PATTERN: &str = "CC|SSN"; // make sure to return a &str here
-
 
 // this gets appended to the end of the redacted file
 const REDACTED_SUFFIX: &str = ".redacted";
@@ -30,8 +35,9 @@ fn main() -> io::Result<()> {
     // Parse the arguments coming in from the CLI
     let cli = Cli::parse();
 
+    
     // Setup the logging framework
-    if let Err(e) = logger::init() {
+    if let Err(e) = logger::init(&cli.logfile) {
         error!("Could not initialize logger: {}", e);
     }
 
