@@ -3,6 +3,7 @@ use clap::Parser;
 
 use flate2::read::GzDecoder;
 use regex::Regex;
+use std::fmt::Error;
 use std::fs::File;
 use std::io;
 use std::io::{BufWriter, Write, BufRead, BufReader};
@@ -26,7 +27,7 @@ struct Cli {
 
 // PII patterns to filter. 
 // TODO: Should be configurable from the CLI.
-const PATTERN: &str = "CC|SSN"; // make sure to return a &str here
+const PATTERN: &str = "CC|SSN";
 
 // this gets appended to the end of the redacted file
 const REDACTED_SUFFIX: &str = ".redacted";
@@ -40,6 +41,7 @@ fn main() -> io::Result<()> {
         error!("Could not initialize logger: {}", e);
     }
 
+    // Setup the regex using the PATTERN above
     let re = match Regex::new(PATTERN) {
         Ok(re) => re,
         Err(err) => panic!("{}", err), // this should not fail, panic if it does
