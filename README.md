@@ -21,4 +21,6 @@ igor@laptop:~/pii-removal$ target/release/pii-removal test-data/*.gz --logfile l
 ```
 
 # Notes
-One of the gzipped files is intentionally bad: `bad.data.log.gz` is an invalid gzip file to test the error handling.
+- One of the gzipped files is intentionally bad: `bad.data.log.gz` is an invalid gzip file to test the error handling.
+- Log file is intentionally preserved between runs to allow for comparison
+- All other files are re-created idempotently
