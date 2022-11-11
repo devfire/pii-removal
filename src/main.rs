@@ -22,6 +22,12 @@ fn main() -> io::Result<()> {
     // TODO: Should be configurable from the CLI.
     let pattern = "CC|SSN"; // make sure to return a &str here
 
+         
+    let re = match Regex::new(pattern) {
+        Ok(re) => re,
+        Err(err) => panic!("{}", err),
+    };
+
     // this gets appended to the end of the redacted file
     let redacted_suffix = ".redacted";
 
@@ -30,27 +36,31 @@ fn main() -> io::Result<()> {
         println!("Processing file: {:?}", file);
 
         // constuct a new filename for the target output file with PII removed
+        // https://doc.rust-lang.org/std/macro.format.html
         let redacted_file_name = format!("{}{}",file, redacted_suffix);
 
-        // Open the input file read-only
-        let file = File::open(file)?;
+        // Open the gz input file read-only
+        let input_file = File::open(file)?;
 
         // Create the file without PII write-only
-        let redacted_file = File::create(redacted_file_name);
+        let redacted_file = File::create(redacted_file_name)?;
 
-        let reader = BufReader::new(GzDecoder::new(file));
+        let reader = BufReader::new(GzDecoder::new(input_file));
      
+        // Total number of lines processed, per file
         let mut lines_processed = 0;
+
+        // Total number of PII lines removed, per file
         let mut lines_redacted = 0;
-     
-        let re = match Regex::new(pattern) {
-             Ok(re) => re,
-             Err(err) => panic!("{}", err),
-         };
-        
+
+        // Stream the gzip file contents, one line at a time
         for read_line_result in reader.lines() {
+            
+            // Bump up the counter
             lines_processed = lines_processed + 1;
      
+            // read_line_result is a Result enum, so we will match on both
+            // OK() and Err() arms.
             match read_line_result {
                  Ok(read_line) => {
                      if re.is_match(&read_line) {
