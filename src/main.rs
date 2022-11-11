@@ -22,7 +22,6 @@ fn main() -> io::Result<()> {
     // TODO: Should be configurable from the CLI.
     let pattern = "CC|SSN"; // make sure to return a &str here
 
-         
     let re = match Regex::new(pattern) {
         Ok(re) => re,
         Err(err) => panic!("{}", err),
@@ -45,6 +44,9 @@ fn main() -> io::Result<()> {
         // Create the file without PII write-only
         let mut redacted_file = BufWriter::new(File::create(redacted_file_name)?);
 
+        // NOTE: the GzDecoder is already a buffered implementation. 
+        // However, it has no idea about any line breaks.
+        // Second BufReader is to identify the line breaks and return whole lines.
         let reader = BufReader::new(GzDecoder::new(input_file));
      
         // Total number of lines processed, per file
