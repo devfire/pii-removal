@@ -49,7 +49,7 @@ fn main() -> io::Result<()> {
     for file in cli.files {
         info!("Processing file: {:?} ", file);
 
-        // constuct a new filename for the target output file with PII removed
+        // construct a new filename for the target output file with PII removed
         // https://doc.rust-lang.org/std/macro.format.html
         // NOTE: this will create a "redacted" output file even if the input is not a valid gzip
         // TODO: run a quick gzip header validation to ensure a valid gzip input
