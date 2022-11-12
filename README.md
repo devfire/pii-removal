@@ -9,6 +9,8 @@ To run, `git clone` this repo and then execute `cargo build --release` to build 
 - [x] accept as input one or more gzipped log files
 - [x] for each input file, produce a redacted copy
 - [x] create an audit log that includes the name of each file processed, a count of the total number of lines processed in each log file, and a count of the total number of lines removed from each log file
+- [x] ​​must​​ not​​ alter ​​logs ​​in-place
+- [x] ​​must ​​remove​ ​all ​​log​​lines ​​containing ​​sensitive ​​data​
 
 # Sample usage
 ```console
