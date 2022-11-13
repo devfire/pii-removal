@@ -21,11 +21,11 @@ struct Cli {
     /// Sets a custom log file
     #[arg(short, long,required = true, value_name = "LOG")]
     logfile: String,
-}
 
-// PII patterns to filter. 
-// TODO: Should be configurable from the CLI.
-const PATTERN: &str = "CC|SSN"; // make sure to return a &str here
+    /// PII pattern to redact, use quotes for multiple, i.e. "CC|SSN"
+    #[arg(short, long,required = true, value_name = "PATTERN")]
+    pattern: String,
+}
 
 // this gets appended to the end of the redacted file
 const REDACTED_SUFFIX: &str = ".redacted";
@@ -40,7 +40,7 @@ fn main() -> io::Result<()> {
     }
 
     // Setup the regex using PATTERN defined above
-    let re = match Regex::new(PATTERN) {
+    let re = match Regex::new(&cli.pattern) {
         Ok(re) => re,
         Err(err) => panic!("{}", err), // this should not fail, panic if it does
     };
@@ -86,8 +86,8 @@ fn main() -> io::Result<()> {
             match read_line_result {
                  Ok(read_line) => {
                      if re.is_match(&read_line) {
-                        // Because we hit on a match on PII PATTERN, we write nothing to the redacted file
-                         lines_redacted = lines_redacted + 1;
+                        // Because we matched a PII pattern, we write nothing to the redacted file
+                        lines_redacted = lines_redacted + 1;
                      } else {
                         // No PII found, write to the redacted file
                         writeln!(redacted_file, "{}", read_line)?;
