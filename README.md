@@ -1,8 +1,7 @@
 # Overview
-This solution removes PII from gzipped log files. What constitutes "PII" is defined as a constant in [main.rs](src/main.rs):
-```rust
-const PATTERN: &str = "CC|SSN";
-```
+This solution removes PII from gzipped log files. 
+
+What constitutes "PII" is passed as a `-p` parameter and must be a valid regex.
 
 To run, `git clone` this repo and then execute `cargo build --release` to build an optimized binary.
 # Requirements
@@ -14,7 +13,7 @@ To run, `git clone` this repo and then execute `cargo build --release` to build 
 
 # Sample usage
 ```console
-igor@laptop:~/pii-removal$ target/release/pii-removal test-data/*.gz --logfile log.out
+igor@laptop:~/pii-removal$ cargo run --release -- -l out.log -p "SSN" test-data/*.gz  
 
 2022-11-11T12:56:14.255265458-05:00 INFO pii_removal - Processing file: "test-data/bad.data.log.gz" 
 2022-11-11T12:56:14.255331467-05:00 ERROR pii_removal - Encountered invalid gzip file, error: invalid gzip header
