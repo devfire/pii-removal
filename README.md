@@ -1,7 +1,7 @@
 # Overview
 This solution removes PII from gzipped log files. 
 
-What constitutes "PII" is passed as a `-p` parameter and must be a valid regex. Multiple matches are supported with a `|` separator.
+What constitutes "PII" is passed as a `-p` parameter and must be a valid regex. Multiple matches are supported with a `|` separator. Make sure to use `"SSN|CC"` to satisfy the original submission requirements.
 
 To run, `git clone` this repo and then execute `cargo build --release` to build an optimized binary.
 # Requirements
